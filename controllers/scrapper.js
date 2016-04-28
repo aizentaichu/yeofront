@@ -115,37 +115,29 @@ Scrapper.prototype.importMeteoNc = function () {
 		function call_1(callback){
 
 			var _SERVER = "http://www.meteo.nc/nouvelle-caledonie/mer/previsions-site?zone=sud";
-			
+			var headers = null;
 			var requestCall1 = request.defaults({'proxy': VAR_PROXY_URL, jar: true});
 			requestCall1.get(_SERVER, function (error, response, html ) {
 				
-				// display returned cookies in header
-				var setcookie = response.headers["set-cookie"];
-				if ( setcookie && strCookieId == null) {
-				  setcookie.forEach(
-					function ( cookiestr ) {
-					  strCookieId = cookiestr.split("=")[0];
-					  console.log( "COOKIE:" + cookiestr.split("=")[0] );
-
-					}
-				  );
-				}
-
 				
 				sSpotList = html;
+				
+				var sToken = html.match(/url:(.*),/).pop().replace("'/index.php?option=com_ajax&module=mer_previsions&method=getSpot&format=raw&Itemid='+jQuery('#Itemid').html()+'&", "");
+				
+				//console.log("EXTRACT : " + sToken);
+				
 				var $spotList = cheerio.load(sSpotList);
 
 				if ($spotList != null) {
 					
 					$spotList('.spotIMG').each(function (i, elem) {
 						var spotName = $spotList(this).attr('title');					
-						var _SERVER_CHILD = "http://www.meteo.nc/index.php?option=com_ajax&module=mer_previsions&method=getSpot&format=raw&Itemid=428&" + strCookieId + "=1&spot=";
+						var _SERVER_CHILD = "http://www.meteo.nc/index.php?option=com_ajax&module=mer_previsions&method=getSpot&format=raw&Itemid=428&" + sToken + "&spot=";
 						var _SERVER_CHILD_URL = _SERVER_CHILD + encodeURIComponent(spotName) + "&zone=sud";
 						var jSpot = {};
 						jSpot.name = spotName;
 						jSpot.url = _SERVER_CHILD_URL;
-						
-							aSpot.push(jSpot);	
+						aSpot.push(jSpot, headers);	
 						
 					});
 
@@ -159,15 +151,17 @@ Scrapper.prototype.importMeteoNc = function () {
 		},
 		function call_2(callback){
 
-			for(var iSpot=0;iSpot<aSpot.length;iSpot++){
+			for(var iSpot=0;iSpot<1;iSpot++){//aSpot.length;iSpot++){
+						
+				
 						
 				var requestCall2 = request.defaults({'proxy': VAR_PROXY_URL, jar: true});
-				console.log(aSpot[iSpot].url);
+				//console.log(aSpot[iSpot].url);
 				requestCall2(aSpot[iSpot].url , function (error, response, html) {
 					
-					console.log(response.statusCode);
 				
 					if (!error && response.statusCode == 200) {
+
 						dbFillMeteoNC(html);
 						callback();
 					}
@@ -200,210 +194,65 @@ Scrapper.prototype.importMeteoNc = function () {
 */
 function dbFillMeteoNC(fileContent){
 
+	var mongoose = require('mongoose');
 	var cheerio = require('cheerio');
-
 	// Parsing HTML File
 	if (fileContent != null) {
 
-		// Loading file content int $
+		// Parsing JSON result...extracting data between tags, then evaluate JSON to JS objects
 		var $ = cheerio.load(fileContent);
-
-			console.log("ok");
+		var sScriptContent = $('script').text();
+		sScriptContent = sScriptContent.replace("setGraph(ObjectVent, SeriesVent);setGraph(ObjectHoule, SeriesHoule);","");
+		eval(sScriptContent);
 		
-			var sUpdateDate = $('#dateMaj span').text().replace("h",":").replace("Carte actualisée le :","").replace("à ","").trim();
-			
-			var moment = require('moment-timezone');
-			moment().format();
-			moment.locale('fr-FR');
-			moment().utcOffset(11);
-			// Vendredi 08 janvier à 11h20 =>  Vendredi 08 janvier 11:20
-			//var m = moment('Vendredi 08 janvier 11:20', "dddd DD MMMM HH:mm");
-			var m = moment(sUpdateDate, "dddd DD MMMM HH:mm")
-			sUpdateDate = m.unix();
+		
+		//for (var windKey in SeriesVent) {
+			console.log(SeriesVent[0].data[0][0]);
+			console.log(SeriesVent[0].data[0][1]);
+		//}
+		
+		for (var key in shom) {
+			if (shom.hasOwnProperty(key)) {
+				var val = shom[key];
+				//console.log("KEY : " + key);
+				//console.log(val);
+				
+				for (var windKey in SeriesVent) {
+					//console.log(SeriesVent[windKey].name);
+				}
+				
+				//SeriesVent.data[key];
+				
+				var jsonToInsert = {
+					spot:"",
+					date:"",
+					sysdate:key,
+					moment:"",
+					wind:"",
+					water_temperature:"",
+					tide_time_1:"",
+					tide_time_2:"",
+					tide_time_3:"",
+					tide_time_4:"",
+					tide_1:"",
+					tide_2:"",
+					tide_3:"",
+					tide_4:"",
+					tide_time_sys_1:"",
+					update_date:""
+				};
+				
 
-		var iCtTable = 0;
-		while (iCtTable <= 1) {
-
-
-			
-			// Dates
-			var sDate1 = $('table:nth-child(1) tr:nth-child(1) th:nth-child(2)').eq(iCtTable).text();
-			var sDate2 = $('table:nth-child(1) tr:nth-child(1) th:nth-child(3)').eq(iCtTable).text();
-			var sDate3 = $('table:nth-child(1) tr:nth-child(1) th:nth-child(4)').eq(iCtTable).text();
-			var sDate4 = $('table:nth-child(1) tr:nth-child(2) th:nth-child(5)').eq(iCtTable).text();
-			var sDate5 = $('table:nth-child(1) tr:nth-child(2) th:nth-child(6)').eq(iCtTable).text();
-			var sDate6 = $('table:nth-child(1) tr:nth-child(2) th:nth-child(7)').eq(iCtTable).text();
-
-			
-			// Moments
-			var sTime1 = $('table:nth-child(1) tr:nth-child(2) th:nth-child(1)').eq(iCtTable).text();
-			var sTime2 = $('table:nth-child(1) tr:nth-child(2) th:nth-child(2)').eq(iCtTable).text();
-			var sTime3 = $('table:nth-child(1) tr:nth-child(2) th:nth-child(3)').eq(iCtTable).text();
-			var sTime4 = $('table:nth-child(1) tr:nth-child(2) th:nth-child(4)').eq(iCtTable).text();
-			var sTime5 = $('table:nth-child(1) tr:nth-child(2) th:nth-child(5)').eq(iCtTable).text();
-			var sTime6 = $('table:nth-child(1) tr:nth-child(2) th:nth-child(6)').eq(iCtTable).text();
-
-			// Wind direction
-			var sWindDir1 = $('table:nth-child(1) tr:nth-child(5) td:nth-child(2) div').eq(iCtTable).text().trim();
-			var sWindDir2 = $('table:nth-child(1) tr:nth-child(5) td:nth-child(3) div').eq(iCtTable).text().trim();
-			var sWindDir3 = $('table:nth-child(1) tr:nth-child(5) td:nth-child(4) div').eq(iCtTable).text().trim();
-			var sWindDir4 = $('table:nth-child(1) tr:nth-child(5) td:nth-child(5) div').eq(iCtTable).text().trim();
-			var sWindDir5 = $('table:nth-child(1) tr:nth-child(5) td:nth-child(6) div').eq(iCtTable).text().trim();
-			var sWindDir6 = $('table:nth-child(1) tr:nth-child(5) td:nth-child(7) div').eq(iCtTable).text().trim();
-
-			// Sea temperature
-			var sSeaTemp1 = $('table:nth-child(1) tr:nth-child(9) td:nth-child(2) div').eq(iCtTable).text().trim();
-			var sSeaTemp2 = $('table:nth-child(1) tr:nth-child(9) td:nth-child(3) div').eq(iCtTable).text().trim();
-			var sSeaTemp3 = $('table:nth-child(1) tr:nth-child(9) td:nth-child(4) div').eq(iCtTable).text().trim();
-
-			var sTideTime1 = $('table:nth-child(1) tr:nth-child(10) td:nth-child(3)').eq(iCtTable).text().trim();
-			var sTideTime2 = $('table:nth-child(1) tr:nth-child(10) td:nth-child(4)').eq(iCtTable).text().trim();
-			var sTideTime3 = $('table:nth-child(1) tr:nth-child(10) td:nth-child(5)').eq(iCtTable).text().trim();
-			var sTideTime4 = $('table:nth-child(1) tr:nth-child(10) td:nth-child(6)').eq(iCtTable).text().trim();
-			var sTideTime5 = $('table:nth-child(1) tr:nth-child(10) td:nth-child(7)').eq(iCtTable).text().trim();
-			var sTideTime6 = $('table:nth-child(1) tr:nth-child(10) td:nth-child(8)').eq(iCtTable).text().trim();
-			var sTideTime7 = $('table:nth-child(1) tr:nth-child(10) td:nth-child(9)').eq(iCtTable).text().trim();
-			var sTideTime8 = $('table:nth-child(1) tr:nth-child(10) td:nth-child(10)').eq(iCtTable).text().trim();
-			var sTideTime9 = $('table:nth-child(1) tr:nth-child(10) td:nth-child(11)').eq(iCtTable).text().trim();
-			var sTideTime10 = $('table:nth-child(1) tr:nth-child(10) td:nth-child(12)').eq(iCtTable).text().trim();
-			var sTideTime11 = $('table:nth-child(1) tr:nth-child(10) td:nth-child(13)').eq(iCtTable).text().trim();
-			var sTideTime12 = $('table:nth-child(1) tr:nth-child(10) td:nth-child(14)').eq(iCtTable).text().trim();
-
-			var sTide1 = $('table:nth-child(1) tr:nth-child(11) td:nth-child(2)').eq(iCtTable).text().trim();
-			var sTide2 = $('table:nth-child(1) tr:nth-child(11) td:nth-child(3)').eq(iCtTable).text().trim();
-			var sTide3 = $('table:nth-child(1) tr:nth-child(11) td:nth-child(4)').eq(iCtTable).text().trim();
-			var sTide4 = $('table:nth-child(1) tr:nth-child(11) td:nth-child(5)').eq(iCtTable).text().trim();
-			var sTide5 = $('table:nth-child(1) tr:nth-child(11) td:nth-child(6)').eq(iCtTable).text().trim();
-			var sTide6 = $('table:nth-child(1) tr:nth-child(11) td:nth-child(7)').eq(iCtTable).text().trim();
-			var sTide7 = $('table:nth-child(1) tr:nth-child(11) td:nth-child(8)').eq(iCtTable).text().trim();
-			var sTide8 = $('table:nth-child(1) tr:nth-child(11) td:nth-child(9)').eq(iCtTable).text().trim();
-			var sTide9 = $('table:nth-child(1) tr:nth-child(11) td:nth-child(10)').eq(iCtTable).text().trim();
-			var sTide10 = $('table:nth-child(1) tr:nth-child(11) td:nth-child(11)').eq(iCtTable).text().trim();
-			var sTide11 = $('table:nth-child(1) tr:nth-child(11) td:nth-child(12)').eq(iCtTable).text().trim();
-			var sTide12 = $('table:nth-child(1) tr:nth-child(11) td:nth-child(13)').eq(iCtTable).text().trim();
-
-			// Init json arrays
-			var jsonContent1 = {};
-			var jsonContent2 = {};
-			var jsonContent3 = {};
-			var jsonContent4 = {};
-			var jsonContent5 = {};
-			var jsonContent6 = {};
-			var jsonContent7 = {};
-			var jsonContent8 = {};
-			var jsonContent9 = {};
-			var jsonContent10 = {};
-			var jsonContent11 = {};
-			var jsonContent12 = {};
-
-			jsonContent1.spot = $('div#spotName').text();
-			jsonContent2.spot = $('div#spotName').text();
-			jsonContent3.spot = $('div#spotName').text();
-			jsonContent4.spot = $('div#spotName').text();
-			jsonContent5.spot = $('div#spotName').text();
-			jsonContent6.spot = $('div#spotName').text();
-			jsonContent7.spot = $('div#spotName').text();
-			jsonContent8.spot = $('div#spotName').text();
-			jsonContent9.spot = $('div#spotName').text();
-			jsonContent10.spot = $('div#spotName').text();
-			jsonContent11.spot = $('div#spotName').text();
-			jsonContent12.spot = $('div#spotName').text();
-
-			jsonContent1.date = sDate1;
-			jsonContent2.date = sDate1;
-			jsonContent3.date = sDate2;
-			jsonContent4.date = sDate2;
-			jsonContent5.date = sDate3;
-			jsonContent6.date = sDate3;
-
-			jsonContent1.sysdate = "";
-			jsonContent1.sysdate = "";
-			jsonContent2.sysdate = "";
-			jsonContent2.sysdate = "";
-			jsonContent3.sysdate = "";
-			jsonContent3.sysdate = "";
-
-			jsonContent1.moment = sTime1;
-			jsonContent2.moment = sTime2;
-			jsonContent3.moment = sTime3;
-			jsonContent4.moment = sTime4;
-			jsonContent5.moment = sTime5;
-			jsonContent6.moment = sTime6;
-
-			jsonContent1.wind = sWindDir1;
-			jsonContent2.wind = sWindDir2;
-			jsonContent3.wind = sWindDir3;
-			jsonContent4.wind = sWindDir4;
-			jsonContent5.wind = sWindDir5;
-			jsonContent6.wind = sWindDir6;
-
-			jsonContent1.water_temperature = sSeaTemp1;
-			jsonContent2.water_temperature = sSeaTemp2;
-			jsonContent3.water_temperature = sSeaTemp3;
-			jsonContent4.water_temperature = sSeaTemp1;
-			jsonContent5.water_temperature = sSeaTemp2;
-			jsonContent6.water_temperature = sSeaTemp3;
-
-			jsonContent1.tide_time_1 = sTideTime1;
-			jsonContent1.tide_time_2 = sTideTime2;
-			jsonContent2.tide_time_1 = sTideTime3;
-			jsonContent2.tide_time_2 = sTideTime4;
-			jsonContent3.tide_time_1 = sTideTime5;
-			jsonContent3.tide_time_2 = sTideTime6;
-			jsonContent4.tide_time_1 = sTideTime7;
-			jsonContent4.tide_time_2 = sTideTime8;
-			jsonContent5.tide_time_1 = sTideTime9;
-			jsonContent5.tide_time_2 = sTideTime10;
-			jsonContent6.tide_time_1 = sTideTime11;
-			jsonContent6.tide_time_2 = sTideTime12;
-
-			jsonContent1.tide_1 = sTide1;
-			jsonContent1.tide_2 = sTide2;
-			jsonContent2.tide_1 = sTide3;
-			jsonContent2.tide_2 = sTide4;
-			jsonContent3.tide_1 = sTide5;
-			jsonContent3.tide_2 = sTide6;
-			jsonContent4.tide_1 = sTide7;
-			jsonContent4.tide_2 = sTide8;
-			jsonContent5.tide_1 = sTide9;
-			jsonContent5.tide_2 = sTide10;
-			jsonContent6.tide_1 = sTide11;
-			jsonContent6.tide_2 = sTide12;
-
-			jsonContent1.tide_time_sys_1 = "";
-			jsonContent2.tide_time_sys_1 = "";
-			jsonContent3.tide_time_sys_1 = "";
-			jsonContent4.tide_time_sys_1 = "";
-			jsonContent5.tide_time_sys_1 = "";
-			jsonContent6.tide_time_sys_1 = "";
-			jsonContent1.tide_time_sys_1 = "";
-			jsonContent2.tide_time_sys_1 = "";
-			jsonContent3.tide_time_sys_1 = "";
-			jsonContent4.tide_time_sys_1 = "";
-			jsonContent5.tide_time_sys_1 = "";
-			jsonContent6.tide_time_sys_1 = "";
-
-			jsonContent1.update_date = sUpdateDate;
-			jsonContent2.update_date = sUpdateDate;
-			jsonContent3.update_date = sUpdateDate;
-			jsonContent4.update_date = sUpdateDate;
-			jsonContent5.update_date = sUpdateDate;
-			jsonContent6.update_date = sUpdateDate;
-
-			iCtTable++;
-
-			// Inserting data in MongoDB
-			var mongoose = require('mongoose');
-			MeteoNC = mongoose.model('MeteoNC');
-			MeteoNC.create(jsonContent1);
-			MeteoNC.create(jsonContent2);
-			MeteoNC.create(jsonContent3);
-			MeteoNC.create(jsonContent4);
-			MeteoNC.create(jsonContent5);
-			MeteoNC.create(jsonContent6);
-
+				// Inserting data in MongoDB
+				MeteoNC = mongoose.model('MeteoNC');
+				MeteoNC.create(jsonToInsert);				
+								
+				
+			}
 		}
-
+		
+		return;
+	
 	}
 
 }
