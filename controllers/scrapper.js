@@ -156,13 +156,14 @@ Scrapper.prototype.importMeteoNc = function () {
 				
 						
 				var requestCall2 = request.defaults({'proxy': VAR_PROXY_URL, jar: true});
+				var spotName = aSpot[iSpot].name;
 				//console.log(aSpot[iSpot].url);
 				requestCall2(aSpot[iSpot].url , function (error, response, html) {
 					
 				
 					if (!error && response.statusCode == 200) {
 
-						dbFillMeteoNC(html);
+						dbFillMeteoNC(html, spotName);
 						callback();
 					}
 		
@@ -192,10 +193,17 @@ Scrapper.prototype.importMeteoNc = function () {
  From HTML DATA to MONGO JSON
  For METEONC only
 */
-function dbFillMeteoNC(fileContent){
+function dbFillMeteoNC(fileContent, spotName){
 
 	var mongoose = require('mongoose');
 	var cheerio = require('cheerio');
+	var moment = require('moment-timezone');
+	moment().format();
+	moment.locale('en-EN');
+	moment().utcOffset(11);
+	var now = moment();	
+	
+	
 	// Parsing HTML File
 	if (fileContent != null) {
 
@@ -205,20 +213,72 @@ function dbFillMeteoNC(fileContent){
 		sScriptContent = sScriptContent.replace("setGraph(ObjectVent, SeriesVent);setGraph(ObjectHoule, SeriesHoule);","");
 		eval(sScriptContent);
 		
-		
-		//for (var windKey in SeriesVent) {
-			console.log(SeriesVent[0].data[0][0]);
-			console.log(SeriesVent[0].data[0][1]);
-		//}
-		
+		// Main data
 		for (var key in shom) {
 			if (shom.hasOwnProperty(key)) {
 				var val = shom[key];
-				//console.log("KEY : " + key);
-				//console.log(val);
+				var now = moment();		
+	
+				var jsonToInsert = {
+					spot:spotName,
+					date:"",
+					sysdate:key,
+					update_date:now.unix()
+				};
+			
+				// Inserting data in MongoDB
+				MeteoNC = mongoose.model('NcWFMain');
+				MeteoNC.create(jsonToInsert);
+			
+			}
+			
+		}
+		
+		for(iSeriesVent=0;iSeriesVent<2;iSeriesVent++){
+			console.log(iSeriesVent);
+			
+			for(iWindData=0;iWindData<SeriesVent[iSeriesVent].data.length; iWindData++){
+
+				var timestamp = SeriesVent[iSeriesVent].data[iWindData][0];
+				switch(iSeriesVent){
+					case 0:
+
+						var windSpeedGut = SeriesVent[iSeriesVent].data[iWindData][1];	
+						
+						// Inserting data in MongoDB
+						NcWFWindSpeedGut = mongoose.model('NcWFWindSpeedGut');
+						NcWFWindSpeedGut.create({sysdate:timestamp, wind_speed_gut:windSpeedGut});
+						
+					break;
+					case 1:
+					
+						var windSpeedAverage = SeriesVent[iSeriesVent].data[iWindData][1];	
+						
+						// Inserting data in MongoDB
+						NcWFWindSpeedAverage = mongoose.model('NcWFWindSpeedAverage');
+						NcWFWindSpeedAverage.create({sysdate:timestamp, wind_speed_gut:windSpeedAverage});
+						
+					break;
+					case 2:
+					
+					break;
+				}
+			
+
 				
-				for (var windKey in SeriesVent) {
-					//console.log(SeriesVent[windKey].name);
+
+			}
+		}
+		
+		/*
+				for(iSeriesVent=0;iSeriesVent<3;iSeriesVent++){
+					for (var windKey in SeriesVent[iSeriesVent].data) {
+						
+						// wind gust speed
+						var timestamp = SeriesVent[iSeriesVent].data[0][0];
+						var windRafale = SeriesVent[iSeriesVent].data[0][1];
+
+					}
 				}
 				
 				//SeriesVent.data[key];
@@ -230,6 +290,8 @@ function dbFillMeteoNC(fileContent){
 					moment:"",
 					wind:"",
 					water_temperature:"",
+					wind_average_speed:String,
+					wind_gust_speed:String,
 					tide_time_1:"",
 					tide_time_2:"",
 					tide_time_3:"",
@@ -241,15 +303,11 @@ function dbFillMeteoNC(fileContent){
 					tide_time_sys_1:"",
 					update_date:""
 				};
-				
+				*/
 
 				// Inserting data in MongoDB
-				MeteoNC = mongoose.model('MeteoNC');
-				MeteoNC.create(jsonToInsert);				
-								
-				
-			}
-		}
+				//MeteoNC = mongoose.model('MeteoNC');
+				//MeteoNC.create(jsonToInsert);			
 		
 		return;
 	

@@ -1,6 +1,6 @@
 var async = require('async');
 var mongoose = require('mongoose');
-MeteoNC = mongoose.model('MeteoNC');
+NcWFMain = mongoose.model('NcWFMain');
 MeteoWG = mongoose.model('MeteoWG');
 MeteoWGMeridien = mongoose.model('MeteoWGMeridien');
 
@@ -15,7 +15,7 @@ exports.findAll = function(req, res){
 	res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
 	res.header("Access-Control-Allow-Headers", "X-Requested-With,Content-Type,Cache-Control");
 
-	MeteoNC.find({'spot':spot},function(err, results) {
+	NcWFMain.find({'spot':spot},function(err, results) {
     return res.send(results);
   });
 };
