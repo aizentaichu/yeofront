@@ -25,15 +25,20 @@ var NcWFWindSpeedGut = new Schema({
 // Tides
 var NcWFTides = new Schema({
   sysdate:String,
-  tide_1:String,
-  tide_2:String,
-  tide_3:String,
-  tide_4:String
+  tide_1_time:String,
+  tide_2_time:String,
+  tide_3_time:String,
+  tide_4_time:String,
+  tide_1_value:String,
+  tide_2_value:String,
+  tide_3_value:String,
+  tide_4_value:String  
 });
 
 
 NcWFMain.index({spot: 1, sysdate: 1}, {unique: true});
-mongoose.model('NcWFWindSpeedGut', NcWFWindSpeedAverage);
+mongoose.model('NcWFWindSpeedGut', NcWFWindSpeedGut);
 mongoose.model('NcWFWindSpeedAverage', NcWFWindSpeedAverage);
+mongoose.model('NcWFTides', NcWFTides);
 mongoose.model('NcWFMain', NcWFMain);
 

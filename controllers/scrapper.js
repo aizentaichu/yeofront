@@ -179,9 +179,9 @@ Scrapper.prototype.importMeteoNc = function () {
 		function(err){
 			
 			if(err){
-				console.log('Error in ImportMeteoNC > call_2');
+				console.log('Error in MongoDB update > call_2');
 			}else{
-				console.log("importMeteoNc completed MongoDB updated...");
+				console.log("MongoDB updated...");
 			}
 			
 		}
@@ -226,38 +226,72 @@ function dbFillMeteoNC(fileContent, spotName){
 					update_date:now.unix()
 				};
 			
-				// Inserting data in MongoDB
+				// Inserting main data in MongoDB
 				MeteoNC = mongoose.model('NcWFMain');
 				MeteoNC.create(jsonToInsert);
+			
+			
+				var jsonToInsertTide = {
+					sysdate:timestamp,
+					tide_1_time:Object.keys(val)[0],
+					tide_2_time:Object.keys(val)[1],
+					tide_3_time:Object.keys(val)[2],
+					tide_4_time:Object.keys(val)[3],
+					tide_1_value:val[Object.keys(val)[0]],
+					tide_2_value:val[Object.keys(val)[1]],
+					tide_3_value:val[Object.keys(val)[2]],
+					tide_4_value:val[Object.keys(val)[3]]
+				};						
+			
+			
+				// Inserting tide data in MongoDB
+				MeteoNC = mongoose.model('NcWFTides');
+				MeteoNC.create(jsonToInsertTide);
+			
 			
 			}
 			
 		}
 		
+		// Wind data
 		for(iSeriesVent=0;iSeriesVent<2;iSeriesVent++){
-			console.log(iSeriesVent);
 			
 			for(iWindData=0;iWindData<SeriesVent[iSeriesVent].data.length; iWindData++){
-
+				
 				var timestamp = SeriesVent[iSeriesVent].data[iWindData][0];
 				switch(iSeriesVent){
 					case 0:
 
-						var windSpeedGut = SeriesVent[iSeriesVent].data[iWindData][1];	
+						var windSpeedGut = SeriesVent[iSeriesVent].data[iWindData][1];
 						
-						// Inserting data in MongoDB
-						NcWFWindSpeedGut = mongoose.model('NcWFWindSpeedGut');
-						NcWFWindSpeedGut.create({sysdate:timestamp, wind_speed_gut:windSpeedGut});
+						if(windSpeedGut != null){
+			
+							var jsonToInsert = {
+								sysdate:timestamp,
+								wind_speed_gut:windSpeedGut
+							};						
+					
+							// Inserting data in MongoDB
+							NcWFWindSpeedGut = mongoose.model('NcWFWindSpeedGut');
+							NcWFWindSpeedGut.create(jsonToInsert);
 						
+						}
 					break;
 					case 1:
-					
+
 						var windSpeedAverage = SeriesVent[iSeriesVent].data[iWindData][1];	
-						
-						// Inserting data in MongoDB
-						NcWFWindSpeedAverage = mongoose.model('NcWFWindSpeedAverage');
-						NcWFWindSpeedAverage.create({sysdate:timestamp, wind_speed_gut:windSpeedAverage});
-						
+
+						if(windSpeedAverage != null){
+								
+							var jsonToInsert = {
+								sysdate:timestamp,
+								wind_speed_average:windSpeedAverage
+							};
+							
+							// Inserting data in MongoDB
+							NcWFWindSpeedAverage = mongoose.model('NcWFWindSpeedAverage');
+							NcWFWindSpeedAverage.create(jsonToInsert);
+						}
 					break;
 					case 2:
 					

@@ -35,7 +35,7 @@ exports.meteo_nc_import = function(req, res) {
 
 	scrapper.importMeteoNc();
 	
-	res.send("Import MeteoNC completed...");
+	res.send("Import completed...");
 };
 
 
@@ -85,7 +85,7 @@ exports.meteo_wg_import = function(req, res) {
 
 	scrapper.importMeteoWG();
 	
-	res.send("Import MeteoWG completed...");
+	res.send("Import completed...");
 };
 
 
