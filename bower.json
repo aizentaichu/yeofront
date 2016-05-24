@@ -1,0 +1,29 @@
+{
+  "name": "yeofront",
+  "description": "Small to check NC weather forecast",
+  "main": "index.js",
+  "license": "MIT",
+  "homepage": "https://github.com/aizentaichu/yeofront",
+  "moduleType": [
+    "amd",
+    "es6",
+    "globals",
+    "node",
+    "yui"
+  ],
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "devDependencies": {
+    "chai": "~3.5.0",
+    "mocha": "~2.4.5"
+  },
+  "dependencies": {
+    "modernizr": "~3.3.1"
+  }
+}

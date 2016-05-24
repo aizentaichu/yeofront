@@ -1,0 +1,26 @@
+<div data-ng-controller="WeatherNCCrtl">
+	<div style="display:inline; align:absmiddle;"></div><h4><big>{{city.name}}&nbsp;-&nbsp;{{(list|filter:query)[0].main.temp}}°C&nbsp;&nbsp;</big>
+	<a class="btn btn-primary" href="#" ng-click="today()">Next 24H</a>
+	<a class="btn btn-primary" href="#" ng-click="tomorrow()">Next 48H</a>
+	<a class="btn btn-primary" href="#" ng-click="thedayaftertomorrow()">After and after</a>
+	</h4></div>
+	<table st-table="rowCollection" class="table table-striped" id="weather-result">
+		<thead>
+		<tr>
+			<!--<th data-field="date">Date</th>-->
+			<!--<th data-field="timestamp">Timestamp</th>-->
+			<th data-field="temperature">Temperature</th>
+			<th data-field="windspeed">Wind speed</th>
+		</tr>
+		</thead>
+		<tbody>
+		<tr ng-repeat="item in list | filter: dtFilter: { dt : myval}">
+			<!--<td>{{item.dt * 1000 | date:'dd-MM-yyyy HH:mm'}}</td>-->
+			<!--<td>{{item.dt * 1000 | date:'dd-MM-yyyy'}}</td>-->
+			<!--<td>{{item.dt}}</td>-->
+			<td>{{item.main.temp}}</td>
+			<td>{{Math.round(item.wind.speed*1.94384,0)}}</td>
+		</tr>
+		</tbody>
+	</table>
+</div>
