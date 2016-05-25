@@ -13,7 +13,7 @@
 		<tbody>
 		<tr ng-repeat="item in forecast_meteonc">
 			<!--<td>{{item.date}}</td>-->
-			<td><strong ng-if="item.sysdate == dateoftoday">{{item.date}}</strong><div ng-if="item.sysdate != dateoftoday">{{item.date}}</div></td>
+			<td><strong ng-if="item.sysdate == dateoftoday">{{item.date}}</strong><div ng-if="item.sysdate != dateoftoday">{{item.sysdate | date:'dd/MM/yyyy HH:mm'}}</div></td>
 			<td>{{item.moment}}</td>
 			<!--<td>{{item.water_temperature}}</td>-->
 			<td>{{item.wind}}<span ng-if="item.wind >= 14">&nbsp;&nbsp;<img src="images/ok.png" /></span></td>
