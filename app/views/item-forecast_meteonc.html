@@ -4,20 +4,17 @@
 		<thead>
 		<tr>
 			<th data-field="date">Date</th>
-			<th data-field="moment">Moment</th>
-			<!--<th data-field="temperature">Temp. Mer</th>-->
 			<th data-field="windspeed">Wind</th>
 			<th data-field="tide">Marée</th>
 		</tr>
 		</thead>
 		<tbody>
-		<tr ng-repeat="item in forecast_meteonc">
+		<tr ng-repeat="item in forecast_meteonc | orderBy:'sysdate'">
 			<!--<td>{{item.date}}</td>-->
 			<td><strong ng-if="item.sysdate == dateoftoday">{{item.date}}</strong><div ng-if="item.sysdate != dateoftoday">{{item.sysdate | date:'dd/MM/yyyy HH:mm'}}</div></td>
-			<td>{{item.moment}}</td>
 			<!--<td>{{item.water_temperature}}</td>-->
-			<td>{{item.wind}}<span ng-if="item.wind >= 14">&nbsp;&nbsp;<img src="images/ok.png" /></span></td>
-			<td>{{item.tide_1}}m à {{item.tide_time_1}} <br /> {{item.tide_2}}m à {{item.tide_time_2}}</td>
+			<td>{{item.wind_speed_average}}<span ng-if="item.wind_speed_average >= 14">&nbsp;&nbsp;<img src="images/ok.png" /></span></td>
+			<td>{{item.tide_1_value}}m à {{item.tide_1_time}} <br /> {{item.tide_2_value}}m à {{item.tide_2_time}} <br /> {{item.tide_3_value}}m à {{item.tide_3_time}} <br /> {{item.tide_4_value}}m à {{item.tide_4_time}}</td>
 		</tr>
 		</tbody>
 	</table>
