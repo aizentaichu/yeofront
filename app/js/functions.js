@@ -1,4 +1,5 @@
-﻿$(function () {
+﻿/*
+$(function () {
 
     var gaugeOptions = {
 
@@ -100,7 +101,7 @@
 
 
 });
-
+*/
 (function(angular) {
   angular.module('PriceApp', ['ngRoute'])
   
@@ -337,7 +338,7 @@ String.prototype.formatFile = function () {
 	}
 	return str;
 }
-
+/*
 
 	//$.getJSON('json/wg-meridien-realtime-unique.json', function(data) {
 	$.getJSON('http://localhost:3002/meteo_wg_realtime_meridien', function(data) {
@@ -432,3 +433,4 @@ String.prototype.formatFile = function () {
 		  }, 5000);
 		});
 	  });
+*/
