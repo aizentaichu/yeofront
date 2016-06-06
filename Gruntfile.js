@@ -30,7 +30,36 @@ module.exports = function (grunt) {
     // Project settings
     config: config,
 
-
+	// Launching MongoDB and microservice webserver
+	shell: {
+        mongo: {
+            command: 'start "MongoDB" cmd /c C:\\Users\\gcolin\\yeorest\\mongo-launcher.bat',
+			options: {
+				async: true
+            }
+        },
+		microservice_server: {
+            command: 'start "MongoDB" cmd /c C:\\Users\\gcolin\\yeorest\\microservice_server-launcher.bat',
+			options: {
+				async: true
+            }
+        }
+    },
+	
+	
+	// Running microservice...
+	http: {
+		microservice_nc: {
+		  options: {
+			url: 'http://localhost:3002/meteo_nc_import'
+		  }
+		},
+		microservice_wg: {
+		  options: {
+			url: 'http://localhost:3002/meteo_wg_import'
+		  }
+		}
+	},
 	
     // Watches files for changes and runs tasks based on the changed files
     watch: {
@@ -358,22 +387,6 @@ module.exports = function (grunt) {
       }
     },
 
-    // Generates a custom Modernizr build that includes only the tests you
-    // reference in your app
-    modernizr: {
-      dist: {
-        devFile: 'bower_components/modernizr/modernizr.js',
-        outputFile: '<%= config.dist %>/scripts/vendor/modernizr.js',
-        files: {
-          src: [
-            '<%= config.dist %>/scripts/{,*/}*.js',
-            '<%= config.dist %>/styles/{,*/}*.css',
-            '!<%= config.dist %>/scripts/vendor/*'
-          ]
-        },
-        uglify: true
-      }
-    },
     // Run some tasks in parallel to speed up build process
     concurrent: {
       server: [
@@ -420,7 +433,7 @@ module.exports = function (grunt) {
     
   });
 
-
+  grunt.loadNpmTasks("grunt-modernizr");
   
   grunt.registerTask('scrap', 'scrap the mAtriX', function (target) {
  
@@ -432,7 +445,7 @@ module.exports = function (grunt) {
   });
   
   
-  grunt.registerTask('serve', 'start the server and preview your app', function (target) {
+  grunt.registerTask('serve', 'Lancement du serveur yeofront...', function (target) {
 
     if (target === 'dist') {
       return grunt.task.run(['build', 'browserSync:dist']);
@@ -443,6 +456,9 @@ module.exports = function (grunt) {
       'wiredep',
       'concurrent:server',
       'postcss',
+	  'shell',
+	  'connect',
+	  'http',
       'browserSync:livereload',
       'watch'
     ]);
@@ -478,7 +494,6 @@ module.exports = function (grunt) {
     'cssmin',
     'uglify',
     'copy:dist',
-    'modernizr',
     'filerev',
     'usemin',
     'htmlmin'
