@@ -1,108 +1,4 @@
-﻿/*
-$(function () {
-
-    var gaugeOptions = {
-
-        chart: {
-            type: 'solidgauge'
-        },
-
-        title: null,
-
-        pane: {
-            center: ['50%', '85%'],
-            size: '140%',
-            startAngle: -90,
-            endAngle: 90,
-            background: {
-                backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || '#EEE',
-                innerRadius: '60%',
-                outerRadius: '100%',
-                shape: 'arc'
-            }
-        },
-
-        tooltip: {
-            enabled: false
-        },
-
-        // the value axis
-        yAxis: {
-            stops: [
-                [0.1, '#55BF3B'], // green
-                [0.5, '#DDDF0D'], // yellow
-                [0.9, '#DF5353'] // red
-            ],
-            lineWidth: 0,
-            minorTickInterval: null,
-            tickPixelInterval: 400,
-            tickWidth: 0,
-            title: {
-                y: -70
-            },
-            labels: {
-                y: 16
-            }
-        },
-
-        plotOptions: {
-            solidgauge: {
-                dataLabels: {
-                    y: 5,
-                    borderWidth: 0,
-                    useHTML: true
-                }
-            }
-        }
-    };
-
-    // The speed gauge
-    $('#container-speed').highcharts(Highcharts.merge(gaugeOptions, {
-        yAxis: {
-            min: 0,
-            max: 50,
-            title: {
-                text: 'Knots'
-            }
-        },
-
-        credits: {
-            enabled: false
-        },
-
-        series: [{
-            name: 'Speed',
-            data: [15],
-            dataLabels: {
-                format: '<div style="text-align:center"><span style=" text-shadow:-2px 0 black, 0 2px black, 2px 0 black, 0 -2px black;font-weight:bold;font-size:35px;color:' +
-                    ((Highcharts.theme && Highcharts.theme.contrastTextColor) || 'white') + '">{y}</span><br/>' +
-                       '<span style="margin-bottom:10px;font-size:12px;color:silver">Knts</span></div>'
-            },
-            tooltip: {
-                valueSuffix: ' knts'
-            }
-        }]
-
-    }));
-
-	// Refresh the gauge with the webservice...
-    setInterval(function () {
-		
-		var chart = $('#container-speed').highcharts(), point,newVal,inc;
-		if (chart) {
-			point = chart.series[0].points[0];
-			$.getJSON( "http://localhost:3002/meteo_wg_realtime_meridien", function( data ) {	  
-				point.update(parseInt(data.current_windspeed));
-				console.log(data.current_windspeed);
-			});
-		}
-
-    }, 5000);
-
-
-});
-*/
-(function(angular) {
+﻿(function(angular) {
   angular.module('PriceApp', ['ngRoute'])
   
 	.controller('MainController', function($scope, $http, $route, $routeParams, $location) {
@@ -272,10 +168,12 @@ $(function () {
 	// Routing conf.
 	.config(function($routeProvider, $locationProvider) {
 		
-		$routeProvider
+	
 		
+		$routeProvider	
+				
 		.when('/', {
-			templateUrl: 'views/item-forecast_meteonc.html',
+			templateUrl: 'views/item-home.html',
 			controller: 'CtrlWeatherForecastNc',
 		})
 		
@@ -296,9 +194,12 @@ $(function () {
 		
 		$locationProvider.html5Mode({
 		  // Disable to make $routerParam working in our controller
-		  enabled: false,
+		  enabled: true,
 		  requireBase: true
 		});
+
+				
+      //console.log($locationProvider);
 
 	});
 	
@@ -338,99 +239,3 @@ String.prototype.formatFile = function () {
 	}
 	return str;
 }
-/*
-
-	//$.getJSON('json/wg-meridien-realtime-unique.json', function(data) {
-	$.getJSON('http://localhost:3002/meteo_wg_realtime_meridien', function(data) {
-			$(function() {
-			
-
-			wind_avg = parseInt(data.current_windspeed);
-			
-			var gaugeOptions = {
-			chart: {
-			  type: 'solidgauge'
-			},
-			title: null,
-			pane: {
-			  center: ['50%', '85%'],
-			  size: '140%',
-			  startAngle: -90,
-			  endAngle: 90,
-			  background: {
-				backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || '#EEE',
-				innerRadius: '60%',
-				outerRadius: '100%',
-				shape: 'arc'
-			  }
-			},
-			tooltip: {
-			  enabled: false
-			},
-			// the value axis
-			yAxis: {
-			  stops: [
-				[0.1, '#55BF3B'], // green
-				[0.5, '#DDDF0D'], // yellow
-				[0.9, '#DF5353'] // red
-			  ],
-			  lineWidth: 0,
-			  minorTickInterval: null,
-			  tickPixelInterval: 400,
-			  tickWidth: 0,
-			  title: {
-				y: -70
-			  },
-			  labels: {
-				y: 16
-			  }
-			},
-			plotOptions: {
-			  solidgauge: {
-				dataLabels: {
-				  y: 5,
-				  borderWidth: 0,
-				  useHTML: true
-				}
-			  }
-			}
-		  };
-		  // The speed gauge
-		  $('#container-speed').highcharts(Highcharts.merge(gaugeOptions, {
-			yAxis: {
-			  min: 0,
-			  max: 50,
-			  title: {
-				text: 'Knots'
-			  }
-			},
-			credits: {
-			  enabled: false
-			},
-			series: [{
-			  name: 'Speed',
-			  data: [wind_avg],
-			  dataLabels: {
-				format: '<div style="text-align:center"><span style=" text-shadow:-2px 0 black, 0 2px black, 2px 0 black, 0 -2px black;font-weight:bold;font-size:35px;color:' + ((Highcharts.theme && Highcharts.theme.contrastTextColor) || 'white') + '">{y}</span><br/>' + '<span style="margin-bottom:10px;font-size:12px;color:silver">Knts</span></div>'
-			  },
-			  tooltip: {
-				valueSuffix: ' knts'
-			  }
-			}]
-		  }));
-		  // Refresh the gauge with the webservice...
-		  setInterval(function() {
-			var chart = $('#container-speed').highcharts(),
-			  point,
-			  newVal,
-			  inc;
-			if (chart) {
-			  point = chart.series[0].points[0];
-			  $.getJSON('http://localhost:3002/meteo_wg_realtime_meridien', function(data) {
-				point.update(parseInt(data.current_windspeed));
-			  });
-			}
-		  }, 5000);
-		});
-	  });
-*/

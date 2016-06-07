@@ -1,6 +1,7 @@
 <!doctype html>
 <html class="no-js" lang="">
   <head>
+	<base href="/">
     <meta charset="utf-8">
     <title>Meteo 1.0</title>
     <meta name="description" content="">
@@ -47,14 +48,14 @@
 						<a class="dropdown-toggle" data-toggle="dropdown" href="#">Forecast Meteo NC
 						<span class="caret"></span></a>
 						<ul class="dropdown-menu">
-							<li ng-repeat="itemmenu_meteonc in navbar_meteonc | orderBy: 'spot'"><a href="#/spot_nc/{{itemmenu_meteonc.spot}}">{{itemmenu_meteonc.spot}}</a></li>
+							<li ng-repeat="itemmenu_meteonc in navbar_meteonc | orderBy: 'spot'"><a href="spot_nc/{{itemmenu_meteonc.spot}}">{{itemmenu_meteonc.spot}}</a></li>
 						</ul>
 					</li>
 					<li class="dropdown">
 						<a class="dropdown-toggle" data-toggle="dropdown" href="#">Forecast WindGuru
 						<span class="caret"></span></a>
 						<ul class="dropdown-menu">
-						<li ng-repeat="itemmenu_meteowg in navbar_wg | orderBy: 'spot'"><a href="#/spot_wg/{{itemmenu_meteowg.spot}}">{{itemmenu_meteowg.spot}}</a></li>
+						<li ng-repeat="itemmenu_meteowg in navbar_wg | orderBy: 'spot'"><a href="spot_wg/{{itemmenu_meteowg.spot}}">{{itemmenu_meteowg.spot}}</a></li>
 						</ul>
 					</li>
 				  </ul>

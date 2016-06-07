@@ -35,13 +35,13 @@ module.exports = function (grunt) {
         mongo: {
             command: 'start "MongoDB" cmd /c C:\\Users\\gcolin\\yeorest\\mongo-launcher.bat',
 			options: {
-				async: true
+				async: false
             }
         },
 		microservice_server: {
-            command: 'start "MongoDB" cmd /c C:\\Users\\gcolin\\yeorest\\microservice_server-launcher.bat',
+            command: 'start "Server" cmd /c C:\\Users\\gcolin\\yeorest\\microservice_server-launcher.bat',
 			options: {
-				async: true
+				async: false
             }
         }
     },
@@ -103,12 +103,16 @@ module.exports = function (grunt) {
         options: {
           files: [
             '<%= config.app %>/{,*/}*.html',
+			'<%= config.app %>/views/{,*/}*.html',
             '.tmp/styles/{,*/}*.css',
             '<%= config.app %>/images/{,*/}*',
             '.tmp/scripts/{,*/}*.js',
             '.tmp/json/*.json',
 			'<%= config.app %>/json/*.json'
           ],
+		  open: {
+                 target: 'http://localhost:9000/#/spot_nc/Anse%20Vata'
+            },
           port: 9000,
           server: {
             baseDir: ['.tmp', config.app],
@@ -457,7 +461,6 @@ module.exports = function (grunt) {
       'concurrent:server',
       'postcss',
 	  'shell',
-	  'connect',
 	  'http',
       'browserSync:livereload',
       'watch'
