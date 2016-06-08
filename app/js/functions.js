@@ -1,4 +1,5 @@
 ﻿(function(angular) {
+	console.log("ok");
   angular.module('PriceApp', ['ngRoute'])
   
 	.controller('MainController', function($scope, $http, $route, $routeParams, $location) {
