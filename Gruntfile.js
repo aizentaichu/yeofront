@@ -2,6 +2,11 @@
 // generator-webapp 1.1.0
 'use strict';
 
+var modRewrite = require('connect-modrewrite');
+var mountFolder = function (connect, dir) {
+    return connect.static(require('path').resolve(dir));
+};
+
 // # Globbing
 // for performance reasons we're only matching one level down:
 // 'test/spec/{,*/}*.js'
@@ -32,16 +37,10 @@ module.exports = function (grunt) {
 
 	// Launching MongoDB and microservice webserver
 	shell: {
-        mongo: {
-            command: 'start "MongoDB" cmd /c C:\\Users\\gcolin\\yeorest\\mongo-launcher.bat',
+        yeolauncher: {
+            command: 'start "WF App" cmd /c C:\\Users\\gcolin\\yeorest\\yeolauncher.bat',
 			options: {
-				async: true
-            }
-        },
-		microservice_server: {
-            command: 'start "Server" cmd /c C:\\Users\\gcolin\\yeorest\\microservice_server-launcher.bat',
-			options: {
-				async: true
+				async: false
             }
         }
     },
@@ -89,58 +88,25 @@ module.exports = function (grunt) {
         tasks: ['newer:copy:styles', 'postcss']
       }
     },
-
 	
-    browserSync: {
-      options: {
-        notify: false,
-        background: true,
-        watchOptions: {
-          ignored: ''
-        }
-      },
-      livereload: {
-        options: {
-			
-			files: [
-            '<%= config.app %>/{,*/}*.html',
-			'<%= config.app %>/views/{,*/}*.html',
-            '.tmp/styles/{,*/}*.css',
-            '<%= config.app %>/images/{,*/}*',
-            '.tmp/scripts/{,*/}*.js',
-            '.tmp/json/*.json',
-			'<%= config.app %>/json/*.json'
-          ],
-          port: 9000,
-          server: {
-            baseDir: ['.tmp', config.app],
-            routes: {
-              '/bower_components': './bower_components'
+	connect: {
+            options: {
+                port: 8000,
+                hostname: 'localhost',
+            },
+            server: {
+                options: {
+                    middleware: function (connect) {
+                        return [
+                            modRewrite (['!\\.html|\\.js|\\.svg|\\.css|\\.png|\\.jpg$ /index.html [L]']),
+                            mountFolder(connect, 'app')
+                        ];
+                    }        
+                }
             }
-          }
-        }
-      },
-      test: {
-        options: {
-          port: 9001,
-          open: false,
-          logLevel: 'silent',
-          host: 'localhost',
-          server: {
-            baseDir: ['.tmp', './test', config.app],
-            routes: {
-              '/bower_components': './bower_components'
-            }
-          }
-        }
-      },
-      dist: {
-        options: {
-          background: false,
-          server: '<%= config.dist %>'
-        }
-      }
-    },
+        },
+    
+	
 
     // Empties folders to start fresh
     clean: {
@@ -267,17 +233,6 @@ module.exports = function (grunt) {
       css: ['<%= config.dist %>/styles/{,*/}*.css']
     },
 
-    // The following *-min tasks produce minified files in the dist folder
-//    imagemin: {
-//      dist: {
-//        files: [{
-//          expand: true,
-//          cwd: '<%= config.app %>/images',
-//          src: '{,*/}*.{gif,jpeg,jpg,png}',
-//          dest: '<%= config.dist %>/images'
-//        }]
-//      }
-//    },
 
     svgmin: {
       dist: {
@@ -312,32 +267,6 @@ module.exports = function (grunt) {
         }]
       }
     },
-
-    // By default, your `index.html`'s <!-- Usemin block --> will take care
-    // of minification. These next options are pre-configured if you do not
-    // wish to use the Usemin blocks.
-    // cssmin: {
-    //   dist: {
-    //     files: {
-    //       '<%= config.dist %>/styles/main.css': [
-    //         '.tmp/styles/{,*/}*.css',
-    //         '<%= config.app %>/styles/{,*/}*.css'
-    //       ]
-    //     }
-    //   }
-    // },
-    // uglify: {
-    //   dist: {
-    //     files: {
-    //       '<%= config.dist %>/scripts/scripts.js': [
-    //         '<%= config.dist %>/scripts/scripts.js'
-    //       ]
-    //     }
-    //   }
-    // },
-    // concat: {
-    //   dist: {}
-    // },
 
 	uglify: {
 		options: {
@@ -434,8 +363,15 @@ module.exports = function (grunt) {
     }
     
   });
-
+/*
   grunt.loadNpmTasks("grunt-modernizr");
+  grunt.loadNpmTasks('grunt-contrib-connect');
+  grunt.loadNpmTasks('grunt-connect-rewrite');
+  grunt.loadNpmTasks('grunt-contrib-watch');
+*/
+	grunt.loadNpmTasks('grunt-contrib-connect');
+    grunt.registerTask('server', ['connect:server']);
+  
   
   grunt.registerTask('scrap', 'scrap the mAtriX', function (target) {
  
@@ -460,7 +396,7 @@ module.exports = function (grunt) {
       'postcss',
 	  'shell',
 	  'http',
-      'browserSync:livereload',
+      'connect',
       'watch'
     ]);
   });
