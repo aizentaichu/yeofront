@@ -1,6 +1,5 @@
 ﻿(function(angular) {
-	console.log("ok");
-  angular.module('PriceApp', ['ngRoute'])
+	angular.module('PriceApp', ['ngRoute'])
   
 	.controller('MainController', function($scope, $http, $route, $routeParams, $location) {
 		
@@ -14,7 +13,7 @@
 
 		})
 		.catch(function (err) {
-			console.log("Error on navbar METEO NC loading");
+			console.log("Error on navbar loading");
 		})
 		.finally(function () {
 
@@ -30,7 +29,7 @@
 			console.log("Error on navbar WG loading" + err);
 		})
 		.finally(function () {
-
+			console.log("Navbar loaded");
 		});
 		
 	})
