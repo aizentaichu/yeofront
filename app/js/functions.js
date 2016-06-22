@@ -101,6 +101,69 @@
 	})
 
 	
+	.controller("CtrlLast6StrongestsWindsNc", function ($scope, $http, $filter, $location, $routeParams) {
+		
+		$scope.gridOptions = {
+			multiSelect: true,
+			filterOptions: $scope.filterOptions,
+			showColumnMenu: true    
+		  };	 
+
+		// Getting city code
+		var spotCode = $routeParams.spot;
+		if(spotCode == null){
+			spotCode = "anse_vata";
+		}
+		//var jsonUrl = "json/meteo-nc-"+ spotCode +".json"
+		var jsonUrl = "http://localhost:3002/meteo_nc/meteo_nc_get_strongests_winds"
+	
+		// Show loading spinner.
+		$scope.loading = true;
+		$scope.Math = window.Math;
+		$scope.Date = Date;
+		$scope.myparam = 1;
+		
+		var dateOfToday = new Date();
+		var sDateOfToday = dateOfToday.getFullYear() + '' + (dateOfToday.getMonth()+1) + ''+ dateOfToday.getDate();
+		$scope.dateoftoday = sDateOfToday;
+		
+		
+		// Loading requested data
+		$http.get(jsonUrl)
+		.success(function (res) {
+			$scope.forecast_meteonc = res.forecast_meteonc;
+			$scope.showMessage = true;		
+		})
+		.catch(function (err) {
+			//console.log(res)
+		})
+		.finally(function () {
+			$scope.loading = false;
+		});
+
+
+	
+        $scope.dtFilter = function(item, options) {
+			$scope.myval = getTimestampDay($scope.myparam);
+			return item.dt < $scope.myval ; 
+		};
+
+		$scope.today = function() {		
+			$scope.myparam = 1;
+		};
+		
+        $scope.tomorrow = function() {		
+			$scope.myparam = 2;
+		};
+		
+        $scope.thedayaftertomorrow = function() {		
+			$scope.myparam = 3;
+		};
+		
+	
+	})
+	
+	
 	.controller("CtrlWeatherForecastNc", function ($scope, $http, $filter, $location, $routeParams) {
 		
 		$scope.gridOptions = {
@@ -174,8 +237,10 @@
 				
 		.when('/', {
 			templateUrl: 'views/item-home.html',
-			controller: 'CtrlWeatherForecastNc',
+			controller: 'CtrlLast6StrongestsWindsNc',
 		})
+		
+		
 		
 		.when('/spot_nc/:spot', {
 			templateUrl: 'views/item-forecast_meteonc.html',
