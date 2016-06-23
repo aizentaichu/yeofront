@@ -115,7 +115,7 @@
 			spotCode = "anse_vata";
 		}
 		//var jsonUrl = "json/meteo-nc-"+ spotCode +".json"
-		var jsonUrl = "http://localhost:3002/meteo_nc/meteo_nc_get_strongests_winds"
+		var jsonUrl = "http://localhost:3002/meteo_nc_get_strongests_winds"
 	
 		// Show loading spinner.
 		$scope.loading = true;
