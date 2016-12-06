@@ -36,12 +36,15 @@ module.exports = function (grunt) {
 	
 	// Launching MongoDB and microservice webserver
 	shell: {
+/*
         yeolauncher: {
             command: 'start "WF App" cmd /c C:\\Users\\gcolin\\yeorest\\yeolauncher.bat',
 			options: {
 				async: false
-            }
+    			}
         }
+*/
+
     },
 
 	// Running microservice...
@@ -466,7 +469,7 @@ module.exports = function (grunt) {
     }
 
     grunt.task.run([
-	  'shell',
+	  /*'shell',*/
 	  'clean:server',
       'wiredep',
       'concurrent:server',
@@ -500,7 +503,7 @@ module.exports = function (grunt) {
   });
 
   grunt.registerTask('test', [
-    'shell',
+    /*'shell',*/
 	'clean:server',
     'wiredep',
     'concurrent:test',
