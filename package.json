@@ -76,6 +76,7 @@
     "grunt": "^1.0.1",
     "grunt-bower": "^0.21.4",
     "grunt-build-control": "^0.7.0",
+    "grunt-css": "^0.5.4",
     "grunt-http": "^2.2.0",
     "grunt-shell": "^2.1.0",
     "gulp": "^3.9.1",
