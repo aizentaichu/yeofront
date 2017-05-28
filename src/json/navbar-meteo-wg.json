@@ -1,0 +1,27 @@
+{
+	"navbar_wg": [{
+		"spot": "New Caledonia - Anse Vata",
+		"url": "anse_vata"
+	},
+	{
+		"spot": "New Caledonia - Ilôt Ténia",
+		"url": "ilot_tenia"
+	},
+	{
+		"spot": "New Caledonia - Ouano",
+		"url": "ouano"
+	},
+	{
+		"spot": "New Caledonia - Meridien Nouméa",
+		"url": "meridien_noumea"
+	},
+	{
+		"spot": "New Caledonia - Noumea",
+		"url": "noumea"
+	},
+	{
+		"spot": "New Caledonia - Ilôt Goeland",
+		"url": "ilot_goeland"
+	}
+]
+}

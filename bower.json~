@@ -2,7 +2,7 @@
   "name": "yeofront",
   "version": "0.0.0",
   "dependencies": {
-	 "bootstrap":"", 		
+	 "bootstrap", 		
     "angular-animate": "~1.5.3",
     "angular-cookies": "~1.5.3",
     "angular-touch": "~1.5.3",

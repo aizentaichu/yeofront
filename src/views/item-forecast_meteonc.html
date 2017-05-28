@@ -1,0 +1,21 @@
+<div data-ng-controller="CtrlWeatherForecastNc">
+	<h4><big>Forecast - {{(forecast_meteonc|filter:query)[0].spot}}</big></h4>
+	<table st-table="rowCollection" class="table table-striped" id="weather-result">
+		<thead>
+		<tr>
+			<th data-field="date">Date</th>
+			<th data-field="windspeed">Wind</th>
+			<th data-field="tide">Marée</th>
+		</tr>
+		</thead>
+		<tbody>
+		<tr ng-repeat="item in forecast_meteonc | orderBy:'sysdate'">
+			<!--<td>{{item.date}}</td>-->
+			<td><strong ng-if="item.sysdate == dateoftoday">{{item.date}}</strong><div ng-if="item.sysdate != dateoftoday">{{item.sysdate*1000 | date:'dd/MM/yyyy HH:mm'}}</div></td>
+			<!--<td>{{item.water_temperature}}</td>-->
+			<td>{{item.wind_speed_average}}<span ng-if="item.wind_speed_average >= 14">&nbsp;&nbsp;<img src="images/ok.png" /></span></td>
+			<td>{{item.tide_1_value}}m à {{item.tide_1_time}} <br /> {{item.tide_2_value}}m à {{item.tide_2_time}} <br /> {{item.tide_3_value}}m à {{item.tide_3_time}} <br /> {{item.tide_4_value}}m à {{item.tide_4_time}}</td>
+		</tr>
+		</tbody>
+	</table>
+</div>

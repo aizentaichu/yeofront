@@ -1,0 +1,23 @@
+<div data-ng-controller="CtrlWeatherForecastWg">
+	<h4><big>Forecast - {{(forecast_windguru|filter:query)[0].city}}</big></h4>
+	<table st-table="rowCollection" class="table table-striped" id="weather-result">
+		<thead>
+		<tr>
+			<th data-field="date">Date</th>
+			<th data-field="moment">Moment</th>
+			<th data-field="hour">Hour</th>
+			<th data-field="temperature">Temp.</th>
+			<th data-field="windspeed">Wind</th>
+		</tr>
+		</thead>
+		<tbody>
+		<tr ng-repeat="item in forecast_windguru">
+			<td>{{item.date}}</td>
+			<td>{{item.moment}}</td>
+			<td>{{item.hour}}h</td>
+			<td>{{item.water_temperature}}°</td>
+			<td>{{item.wind}}<span ng-if="item.wind >= 14">&nbsp;&nbsp;<img src="images/ok.png" /></span></td>
+		</tr>
+		</tbody>
+	</table>
+</div>
